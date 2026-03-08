@@ -37,9 +37,21 @@ export async function updateSession(request: NextRequest) {
 
   // IMPORTANT: If you remove getUser() and you use server-side rendering
   // with the Supabase client, your users may be randomly logged out.
+  
+  // Suppress Supabase getSession warning - we're using getUser() which is secure
+  const originalWarn = console.warn
+  console.warn = (...args: any[]) => {
+    if (args[0]?.includes?.('Using the user object as returned from supabase.auth.getSession()')) {
+      return
+    }
+    originalWarn(...args)
+  }
+  
   const {
     data: { user },
   } = await supabase.auth.getUser()
+  
+  console.warn = originalWarn
 
   if (
     // if the user is not logged in and the app path, in this case, /protected, is accessed, redirect to the login page

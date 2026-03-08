@@ -8,17 +8,22 @@ import { createClient } from '@/lib/supabase/client'
 import { ArrowLeft, TrendingUp } from 'lucide-react'
 
 const MOODS = [
-  { value: 'happy', label: 'Happy', emoji: '😊', color: '#f4d35e' },
-  { value: 'calm', label: 'Calm', emoji: '😌', color: '#7fb3a3' },
-  { value: 'neutral', label: 'Neutral', emoji: '😐', color: '#9a938c' },
-  { value: 'sad', label: 'Sad', emoji: '😢', color: '#a8dadc' },
-  { value: 'anxious', label: 'Anxious', emoji: '😰', color: '#ff6b6b' },
+  { value: 1, label: 'Happy', emoji: '😊', color: '#f4d35e', name: 'happy' },
+  { value: 2, label: 'Calm', emoji: '😌', color: '#7fb3a3', name: 'calm' },
+  { value: 3, label: 'Neutral', emoji: '😐', color: '#9a938c', name: 'neutral' },
+  { value: 4, label: 'Sad', emoji: '😢', color: '#a8dadc', name: 'sad' },
+  { value: 5, label: 'Anxious', emoji: '😰', color: '#ff6b6b', name: 'anxious' },
 ]
+
+const getMoodName = (moodValue: number) => {
+  const mood = MOODS.find(m => m.value === moodValue)
+  return mood?.name || 'neutral'
+}
 
 export default function MoodPage() {
   const [moodHistory, setMoodHistory] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedMood, setSelectedMood] = useState<string | null>(null)
+  const [selectedMood, setSelectedMood] = useState<number | null>(null)
 
   useEffect(() => {
     loadMoodHistory()
@@ -46,7 +51,7 @@ export default function MoodPage() {
     }
   }
 
-  const handleRecordMood = async (moodValue: string) => {
+  const handleRecordMood = async (moodValue: number) => {
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
@@ -55,7 +60,6 @@ export default function MoodPage() {
       const { error } = await supabase.from('mood_snapshots').insert({
         user_id: user.id,
         mood: moodValue,
-        intensity: 5, // Default intensity
       })
 
       if (error) throw error

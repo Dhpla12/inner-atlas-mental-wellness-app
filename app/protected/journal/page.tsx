@@ -11,12 +11,22 @@ import { createClient } from '@/lib/supabase/client'
 import { Plus, ArrowLeft, Trash2 } from 'lucide-react'
 
 const MOODS = [
-  { value: 'happy', label: '😊 Happy', color: '#f4d35e' },
-  { value: 'calm', label: '😌 Calm', color: '#7fb3a3' },
-  { value: 'neutral', label: '😐 Neutral', color: '#9a938c' },
-  { value: 'sad', label: '😢 Sad', color: '#a8dadc' },
-  { value: 'anxious', label: '😰 Anxious', color: '#ff6b6b' },
+  { value: 1, label: '😊 Happy', color: '#f4d35e', name: 'happy' },
+  { value: 2, label: '😌 Calm', color: '#7fb3a3', name: 'calm' },
+  { value: 3, label: '😐 Neutral', color: '#9a938c', name: 'neutral' },
+  { value: 4, label: '😢 Sad', color: '#a8dadc', name: 'sad' },
+  { value: 5, label: '😰 Anxious', color: '#ff6b6b', name: 'anxious' },
 ]
+
+const getMoodColor = (moodValue: number) => {
+  const mood = MOODS.find(m => m.value === moodValue)
+  return mood?.color || '#9a938c'
+}
+
+const getMoodName = (moodValue: number) => {
+  const mood = MOODS.find(m => m.value === moodValue)
+  return mood?.name || 'neutral'
+}
 
 export default function JournalPage() {
   const router = useRouter()
@@ -25,7 +35,7 @@ export default function JournalPage() {
   const [showNew, setShowNew] = useState(false)
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
-  const [mood, setMood] = useState('neutral')
+  const [mood, setMood] = useState(3)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
@@ -74,7 +84,7 @@ export default function JournalPage() {
 
       setTitle('')
       setContent('')
-      setMood('neutral')
+      setMood(3)
       setShowNew(false)
       loadEntries()
     } catch (error) {
@@ -148,7 +158,7 @@ export default function JournalPage() {
                 <div>
                   <Label className="text-sm font-medium mb-3 block">How are you feeling?</Label>
                   <div className="grid grid-cols-5 gap-3">
-                    {MOODS.map(({ value, label, color }) => (
+                    {MOODS.map(({ value, label }) => (
                       <button
                         key={value}
                         type="button"
@@ -226,10 +236,10 @@ export default function JournalPage() {
                         <div className="flex items-center gap-3">
                           <h3 className="font-semibold text-lg text-foreground">{entry.title}</h3>
                           <span
-                            className="inline-flex items-center justify-center h-6 w-6 rounded-full text-xs font-medium"
-                            style={{ backgroundColor: entry.mood === 'happy' ? '#f4d35e' : entry.mood === 'calm' ? '#7fb3a3' : entry.mood === 'sad' ? '#a8dadc' : entry.mood === 'anxious' ? '#ff6b6b' : '#9a938c' }}
+                            className="inline-flex items-center justify-center h-6 w-6 rounded-full text-xs font-medium text-foreground"
+                            style={{ backgroundColor: getMoodColor(entry.mood) }}
                           >
-                            {entry.mood.charAt(0).toUpperCase()}
+                            {getMoodName(entry.mood).charAt(0).toUpperCase()}
                           </span>
                         </div>
                         <p className="text-muted-foreground line-clamp-2">{entry.content}</p>

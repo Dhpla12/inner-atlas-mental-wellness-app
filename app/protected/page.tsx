@@ -8,11 +8,11 @@ import { PlusCircle, BookOpen, Target, TrendingUp } from 'lucide-react'
 
 export default async function Dashboard() {
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  if (!session) return null
+  if (!user) return null
 
-  const userId = session.user.id
+  const userId = user.id
 
   try {
     const [entries, moodHistory, habits] = await Promise.all([

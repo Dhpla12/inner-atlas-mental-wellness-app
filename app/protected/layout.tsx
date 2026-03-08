@@ -8,15 +8,15 @@ export default async function ProtectedLayout({
   children: React.ReactNode
 }) {
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  if (!session) {
+  if (!user) {
     redirect('/auth/login')
   }
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <Navigation user={session.user} />
+      <Navigation user={user} />
       <main className="flex-1 overflow-y-auto">
         {children}
       </main>
